@@ -352,11 +352,10 @@
                 if (localStorage['token']) {
                     token = localStorage['token']
                 }
-                var ws = new WebSocket("ws://localhost:8081/xo/ws/" + token)
+                var ws = new WebSocket("ws://{{.domain}}/xo/ws/" + token)
                 Vue.set(this, 'ws', ws)
                 ws.onopen = function () {
                     _App.log("به سرور وصل شدید.")
-                    _App.call("update_name", {"display_name": "Mohammad"})
                 }
                 ws.onmessage = function (evt) {
                     var received_msg = JSON.parse(evt.data);

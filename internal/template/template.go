@@ -27,6 +27,7 @@ func TemplateData(p echo.Map) echo.Map {
 	}
 	p["baseurl"] = config.FULL_URL
 	p["base_url"] = config.FULL_URL
+	p["domain"] = config.DOMAIN
 	p["site_title"] = "TwittFa"
 	return p
 }
