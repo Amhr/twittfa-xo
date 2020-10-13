@@ -352,7 +352,7 @@
                 if (localStorage['token']) {
                     token = localStorage['token']
                 }
-                var ws = new WebSocket("ws://{{.domain}}/xo/ws/" + token)
+                var ws = new WebSocket("ws{{.is_https}}://{{.domain}}/xo/ws/" + token)
                 Vue.set(this, 'ws', ws)
                 ws.onopen = function () {
                     _App.log("به سرور وصل شدید.")
