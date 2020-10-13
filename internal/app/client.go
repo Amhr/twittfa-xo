@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"log"
+	"sync"
 )
 
 type Client struct {
@@ -22,6 +23,7 @@ type Client struct {
 	contextClose context.CancelFunc
 	Status       string
 	GameStatus   int
+	closeOne     *sync.Once
 }
 
 const STATUS_LOBBY = 0
@@ -40,6 +42,7 @@ func NewClient(con Connection, s *Server) *Client {
 		contextClose: cn,
 		Status:       "online",
 		GameStatus:   STATUS_LOBBY,
+		closeOne:     new(sync.Once),
 	}
 	c.Worker()
 	c.SendMe()
@@ -229,14 +232,15 @@ func (c *Client) ID() string {
 // closing client
 
 func (c *Client) Close() {
-	if c.GetStatus() != "offline" {
-		c.SetStatus("offline")
-		c.BroadcastRoom(NewMessage("offline", JSON{
-			"client": c.Map(),
-		}))
+	c.SetStatus("offline")
+	c.BroadcastRoom(NewMessage("offline", JSON{
+		"client": c.Map(),
+	}))
+	c.closeOne.Do(func() {
 		close(c.send)
-		_ = c.conn.Close()
-	}
+	})
+	_ = c.conn.Close()
+
 }
 
 func (c *Client) Reconnect() {
@@ -246,6 +250,7 @@ func (c *Client) Reconnect() {
 	}))
 	c.send = make(chan Message)
 	ctx, can := context.WithCancel(context.Background())
+	c.closeOne = new(sync.Once)
 	c.Context = ctx
 	c.contextClose = can
 	c.Worker()
