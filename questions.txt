@@ -1,0 +1,8 @@
+When we are going to use mutex to protect a struct
+should i create mutex for every single properties or one global lock ?
+
+are mutexes being used only for write ? or every where which we use write and
+read should be wrapped by mutex?
+
+and how do you test this kind of stuffs ? because they will work fine under normal load
+, problem is when they are serving more users

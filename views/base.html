@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TwittFa | {{ .title}} </title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+    <link
+            rel="stylesheet"
+            href="https://cdn.rtlcss.com/bootstrap/v4.2.1/css/bootstrap.min.css"
+            integrity="sha384-vus3nQHTD+5mpDiZ4rkEPlnkcyTP+49BhJ4wJeJunw06ZAp+wzzeBPUXr42fi8If"
+            crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script
+            src="https://cdn.rtlcss.com/bootstrap/v4.2.1/js/bootstrap.min.js"
+            integrity="sha384-a9xOd0rz8w0J8zqj1qJic7GPFfyMfoiuDjC9rqXlVOcGO/dmRqzMn34gZYDTel8k"
+            crossorigin="anonymous"></script>
+    <link href='https://cdn.fontcdn.ir/Font/Persian/Yekan/Yekan.css' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{{.base_url}}/xo/static/style.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+            integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+
+<div class="header fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">توییت فا » دوز</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav " style="justify-content: flex-end">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://twittfa.ir">صفحه اصلی </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{.base_url}}/quiz/start">ساخت کوئیز جدید</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+<div class="app" style="min-height: 100%">
+    <div class="placeholder" style="min-height: 100%;padding: 100px 0px">
+
+        <div class="appholder">
+            <div v-if="!me.display_name">
+                <div class="card">
+                    <div class="card-header">
+                        ورود به سایت
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <input type="text" v-model="form.display_name" class="form-control"
+                                   placeholder="نام نمایشی">
+                            <small id="emailHelp" class="form-text text-muted">نام نمایشی خود را وارد کنید. بقیه با این
+                                نام شما
+                                رو می بینند</small>
+                        </div>
+                        <button @click.prevent="updateDisplayName" class="btn btn-primary">ورود به بازی</button>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="me.display_name">
+                <div class="alert alert-info flex space-between align-center">
+                    <div>
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-person-fill" fill="currentColor"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                        </svg>
+                        <span>سلام <strong>${me.display_name}</strong></span>
+                    </div>
+                    <button class="btn btn-light btn-sm" @click.prevent="changeName">تغییر نام</button>
+                </div>
+
+
+                {{/*                APP LOGIC*/}}
+                <div v-if="game_status === 0">
+                    <div class="card">
+                        <div class="card-header">
+                            هنوز وارد اتاق ایی نشده اید
+                        </div>
+                        <div class="card-body">
+                            <p>برای اینکه بتونی بازی کنی یا باید از طریق لینک بازی یکی از دوستات وارد اتاقش بشی یا اینکه
+                                خودت لینک اتاق رو بدی به یکی از دوستات</p>
+                            <button @click.prevent="createNewRoom" class="btn btn-primary">ساخت اتاق جدید</button>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="game_status === 2">
+                    <div class="card">
+                        <div class="card-header">
+                            هنوز وارد اتاق ایی نشده اید
+                        </div>
+                        <div class="card-body">
+                            درحال ساخت اتاق
+                        </div>
+                    </div>
+                </div>
+                <div v-if="game_status === 1">
+                    <div class="card">
+                        <div class="card-header">
+                            اتاق بازی
+                        </div>
+                        <div class="card-body">
+
+
+                            <div v-if="room.status == 0">
+                                <div class="alert alert-warning">اتاق ساخته شده. اما توش تنها هستی!</div>
+                                <p> لینک زیر رو به دوستات بده که بتونن از طریقش وارد بازی بشن</p>
+                                <div class="form-group">
+                                    <input type="text" style="font-family: Arial;direction: ltr; font-size: 12px"
+                                           :value="roomUrl()" class="form-control"
+                                           placeholder="نام نمایشی">
+                                    <small id="emailHelp" class="form-text text-muted">با اولین نفری که از طریق این لینک
+                                        وارد اتاقت بشه بازی میکنی</small>
+                                </div>
+                            </div>
+
+                            <div v-if="room.status == 1">
+                                <div class="row align-center space-between">
+                                    <div class="user-scoreboard flex align-center">
+                                        <div class="scoreboard-text center">
+                                            ${getMyText()}
+                                        </div>
+                                        <div style="margin-right: 10px;">
+                                            <strong>${me.display_name}</strong> <br>
+                                        </div>
+                                    </div>
+
+                                    <div class="user-scoreboard flex align-center" style="flex-direction: row-reverse">
+                                        <div class="scoreboard-text center" style="background-color: #2196F3">
+                                            ${getOtherText()}
+                                        </div>
+                                        <div style="margin-left: 10px;display: flex;flex-direction: column;align-items: flex-end">
+                                            <strong>${getOtherName()}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="game-turn center" style="padding: 10px 0px 0px">
+                                    <h5 v-if="room.turn.toUpperCase() === getMyText()">نوبت شما می باشد</h5>
+                                    <h5 v-if="room.turn.toUpperCase() !== getMyText()">نوبت حریف می باشد</h5>
+                                </div>
+                                <div class="board-holder center" style="padding: 20px 0px">
+                                    <div class="board-game">
+                                        <div class="board-game-row flex" v-for="(row,i) in room.board">
+                                            <div v-for="(item,j) in row"
+                                                 :class="'board-game-item center '+(item.toUpperCase())"
+                                                 @click.prevent="select(i,j)">${item}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="room.status == 2">
+                                <div class="row align-center space-between">
+                                    <div class="user-scoreboard flex align-center">
+                                        <div class="scoreboard-text center">
+                                            ${getMyText()}
+                                        </div>
+                                        <div style="margin-right: 10px;">
+                                            <strong>${me.display_name}</strong> <br>
+                                        </div>
+                                    </div>
+
+                                    <div class="user-scoreboard flex align-center" style="flex-direction: row-reverse">
+                                        <div class="scoreboard-text center" style="background-color: #2196F3">
+                                            ${getOtherText()}
+                                        </div>
+                                        <div style="margin-left: 10px;display: flex;flex-direction: column;align-items: flex-end">
+                                            <strong>${getOtherName()}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="h10"></div>
+                                <hr>
+                                <div class="h10"></div>
+                                <p v-if="room.winner == ''">بازی مساوی شد</p>
+                                <p v-if="room.winner.toUpperCase() == getMyText()">تبریک! شما بازی رو بردید</p>
+                                <p v-if="room.winner.toUpperCase() == getOtherText()">متاسفانه بازی رو باختید</p>
+                                <hr>
+                                <button class="btn btn-primary" @click.prevent="regame">بازی مجدد با ${getOtherName()}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="logs">
+                <p>کنسول:</p>
+                <div v-for="log in logs" :class="log.console ? 'log-console':'log-data'">
+                    ${log.data}
+                </div>
+            </div>
+            <div class="logs-input" v-if="isInRoom()">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-dark" @click.prevent="broadcast">ارسال</button>
+                    </div>
+                    <input type="text" class="form-control" v-model="chat" id="inlineFormInputGroupUsername2"
+                           placeholder="متن پیام ..">
+                </div>
+            </div>
+        </div>
+        <div class="errors" v-if="error">
+            <div class="alert alert-danger">${error}</div>
+        </div>
+    </div>
+
+    <footer class="page-footer font-small unique-color-dark pt-4 fixed-bottom">
+        <div style="background: white !important;" class="footer-copyright text-center py-3">© 2020 - توییت فا
+        </div>
+
+    </footer>
+    <div style="height: 50px"></div>
+
+    <script>
+        const _App = new Vue({
+            el: ".app",
+            delimiters: ['${', '}'],
+            data: {
+                me: {},
+                logs: [],
+                my_id: "",
+                ws: null,
+                chat: "",
+                form: {
+                    display_name: ""
+                },
+                error: "",
+                room: {},
+                game_status: 0,
+                room_to_join: "{{.room_to_join}}"
+            },
+            methods: {
+                changeName: function () {
+                    Vue.set(this.me, 'display_name', '')
+                },
+                regame: function () {
+                    this.call("regame", {})
+                    this.log("درخواست بازی مجدد ارسال شد. در صورتی که یار مقابل قبول کنه با هم بازی میکنید")
+                },
+                select: function (i, j) {
+                    if (_App.room.board[i][j]) {
+                        this.log("این خانه قبلا انتخاب شده است", true)
+                        return
+                    }
+                    this.call("select", {
+                        i: "" + i, j: "" + j
+                    })
+                },
+                isInRoom: function () {
+                    return (this.room && this.room.status === 1)
+                },
+                getOtherName: function () {
+                    for (var c of _App.room.clients) {
+                        if (c.uid !== this.my_id)
+                            return c.display_name
+                    }
+                    return ""
+                },
+                getOtherText: function () {
+                    if (_App.room.x_id === _App.my_id) return "O"
+                    if (_App.room.o_id === _App.my_id) return "X"
+                    return ""
+                },
+                broadcast: function () {
+                    var text = this.chat
+                    if (text === "") {
+                        return false
+                    }
+                    this.call("broadcast", {
+                        text: text
+                    })
+                    Vue.set(this, 'chat', '')
+                },
+                getOtherClient: function () {
+                    var other = {}
+                    for (const c in _App.room.clients) {
+                        if (c.uid !== _App.my_id) {
+                            return c
+                        }
+                    }
+                    return other
+                },
+                getMyText: function () {
+                    if (_App.room.x_id === _App.my_id) return "X"
+                    if (_App.room.o_id === _App.my_id) return "O"
+                    return ""
+                },
+                createNewRoom: function () {
+                    Vue.set(_App, 'game_status', 2)
+                    _App.call("create_room", {})
+                },
+                roomUrl: function () {
+                    return "{{.base_url}}/xo/join/" + this.room.id
+                },
+                mkError: function (txt, dur = 5) {
+                    Vue.set(_App, 'error', txt)
+                    setTimeout(function () {
+                        _App.clearError()
+                    }, dur * 1000)
+                },
+                clearError: function () {
+                    Vue.set(_App, 'error', "")
+                },
+                updateDisplayName: function () {
+                    this.clearError()
+                    var dn = this.form.display_name
+                    if (dn.length < 3) {
+                        _App.mkError("نام نمایشی باید حداقل ۴ کاراکتر باشد")
+                        return
+                    }
+
+                    this.call("update_name", {"display_name": dn})
+                },
+                log: function (data, cns = true) {
+                    this.logs.unshift({
+                        "console": cns,
+                        data: data
+                    })
+                },
+                call: function (acton, data) {
+                    this.ws.send(JSON.stringify({
+                        action: acton,
+                        data: data
+                    }))
+                }
+            },
+            mounted: function () {
+                console.log(" > Starting App");
+                var token = "null"
+                if (localStorage['token']) {
+                    token = localStorage['token']
+                }
+                var ws = new WebSocket("ws://localhost:8081/xo/ws/" + token)
+                Vue.set(this, 'ws', ws)
+                ws.onopen = function () {
+                    _App.log("به سرور وصل شدید.")
+                    _App.call("update_name", {"display_name": "Mohammad"})
+                }
+                ws.onmessage = function (evt) {
+                    var received_msg = JSON.parse(evt.data);
+                    console.log(received_msg);
+                    var action = received_msg.action;
+                    switch (action) {
+                        case "me": {
+                            Vue.set(_App, "me", received_msg.data.client)
+                            Vue.set(_App, "game_status", received_msg.data.game_status)
+                            Vue.set(_App, "my_id", received_msg.data.public_id)
+                            if (received_msg.data.game_status === 1) {
+                                console.log("joining room");
+                                _App.call("join_room", {"room_id": received_msg.data.room_id})
+                            }
+                            localStorage["token"] = received_msg.data.token
+
+                            // join if user is in lobby waiting
+                            if (received_msg.data.game_status === 0 && _App.room_to_join) {
+                                _App.call("join_room", {"room_id": _App.room_to_join})
+                            }
+
+                        }
+                            break;
+
+                        case "room_created": {
+                            _App.call("join_room", {"room_id": received_msg.data.room_id})
+                        }
+                            break;
+
+                        case "join_room": {
+                            Vue.set(_App, "game_status", 1)
+                            Vue.set(_App, "room", received_msg.data.room)
+                        }
+                            break;
+
+                        case "update_room": {
+                            Vue.set(_App, "room", received_msg.data.room)
+                        }
+                            break
+
+
+                        case "chat": {
+                            _App.log(received_msg.data.from + " : " + received_msg.data.text, false)
+                        }
+                            break
+
+                        case "game_started": {
+                            _App.log("بازی شروع شد", true)
+                        }
+                            break
+                    }
+
+                }
+
+                ws.onclose = function () {
+                    console.log(" > Connection Closed")
+                    _App.log("ارتباط با سرور قطع شد")
+                }
+                ws.onerror = function (err) {
+                    console.log(" > WS Error :")
+                    console.log(err);
+                }
+            }
+        })
+    </script>
+</body>
+</html>
