@@ -229,12 +229,14 @@ func (c *Client) ID() string {
 // closing client
 
 func (c *Client) Close() {
-	c.SetStatus("offline")
-	c.BroadcastRoom(NewMessage("offline", JSON{
-		"client": c.Map(),
-	}))
-	close(c.send)
-	_ = c.conn.Close()
+	if c.GetStatus() != "offline" {
+		c.SetStatus("offline")
+		c.BroadcastRoom(NewMessage("offline", JSON{
+			"client": c.Map(),
+		}))
+		close(c.send)
+		_ = c.conn.Close()
+	}
 }
 
 func (c *Client) Reconnect() {
